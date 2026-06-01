@@ -1,7 +1,34 @@
+# VaxFlow 💉
 
-O **VaxFlow** é um sistema de backend robusto para gestão de imunização, integrando cidadãos, unidades de saúde e gestores em uma plataforma segura e escalável.
+> Sistema de backend robusto para gestão de imunização, integrando cidadãos, unidades de saúde e gestores em uma plataforma segura e escalável.
+
+![Python](https://img.shields.io/badge/python-3.13+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?style=flat&logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-316192.svg?style=flat&logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Status](https://img.shields.io/badge/status-active-success)
+
+---
+
+## 📑 Sumário
+
+- [Funcionalidades](#-funcionalidades)
+- [Arquitetura](#-arquitetura-do-sistema)
+- [Perfis de Usuário](#-perfis-de-usuário)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Instalação](#-instalação)
+- [Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [Exemplos de Uso](#-exemplos-de-uso)
+- [Documentação da API](#-documentação-da-api)
+- [Testes](#-testes)
+- [Roadmap](#-roadmap)
+- [Licença](#-licença)
+- [Autores](#-autores)
+
+---
 
 ## ✨ Funcionalidades
+
 - **Gestão de Usuários:** Autocadastro, autenticação JWT e controle de acesso baseado em papéis (RBAC).
 - **Agendamento Inteligente:** Reserva de horários para vacinação com validação de disponibilidade.
 - **Controle de Estoque:** Gestão de lotes de vacinas com controle de validade e baixa automática.
@@ -10,6 +37,7 @@ O **VaxFlow** é um sistema de backend robusto para gestão de imunização, int
 - **Relatórios & Auditoria:** Visões gerenciais de cobertura vacinal e rastreabilidade de ações.
 
 ## 🏗️ Arquitetura do Sistema
+
 O sistema utiliza uma arquitetura multicamadas para garantir a separação de responsabilidades:
 
 ```mermaid
@@ -22,7 +50,25 @@ graph TD
     Models --> DB[(PostgreSQL)]
 ```
 
+## 👥 Perfis de Usuário
+
+### 👤 Cidadão
+- Consultar carteira digital de vacinação.
+- Agendar vacinação em unidades disponíveis.
+- Consultar histórico de doses aplicadas.
+
+### 🧑‍⚕️ Técnico (Saúde)
+- Registrar aplicações de vacinas.
+- Gerenciar estoque de lotes na unidade.
+- Validar agendamentos.
+
+### 👨‍💼 Gestor
+- Criar e gerenciar campanhas de vacinação.
+- Gerar relatórios de cobertura vacinal.
+- Gerenciar unidades de saúde e usuários.
+
 ## 📁 Estrutura do Projeto
+
 ```text
 .
 ├── alembic/              # Migrações do banco de dados
@@ -39,7 +85,47 @@ graph TD
 └── .env                  # Configurações de ambiente
 ```
 
+## 🚀 Instalação
+
+### Pré-requisitos
+
+- Python 3.13+
+- PostgreSQL 16+
+- [uv](https://github.com/astral-sh/uv) (Gerenciador de pacotes)
+- Docker (opcional)
+
+### Passo a Passo
+
+1. **Clonar o projeto**
+   ```bash
+   git clone https://github.com/leowalker/vaxflow.git
+   cd vaxflow
+   ```
+
+2. **Configurar o ambiente**
+   Crie um arquivo `.env` baseado no `.env_example`:
+   ```bash
+   cp .env_example .env
+   ```
+
+3. **Instalar dependências**
+   ```bash
+   uv sync
+   ```
+
+4. **Rodar as migrações**
+   ```bash
+   task up
+   ```
+
+5. **Executar o servidor**
+   ```bash
+   task run
+   ```
+   A API estará disponível em `http://localhost:7000`.
+
 ## 🔐 Variáveis de Ambiente
+
 | Variável | Descrição | Exemplo |
 | :--- | :--- | :--- |
 | `DATABASE_URL` | URL de conexão com o banco | `postgresql://user:pass@localhost:5432/db` |
@@ -47,104 +133,60 @@ graph TD
 | `DEBUG` | Ativa modo de desenvolvimento | `True` |
 | `FIRST_SUPERUSER` | Email do admin inicial | `admin@healthnexus.com` |
 
-## 📡 Exemplos de Requisições
+## 📡 Exemplos de Uso
+
 ### Autenticação (Login)
+> **Nota:** O login utiliza `application/x-www-form-urlencoded` para envio de credenciais.
+
 ```bash
-curl -X POST "http://localhost:7000/api/v1/login" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "password123"}'
+curl -X POST "http://localhost:7000/login/access-token" \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "username=admin@example.com&password=password123"
 ```
 
 ### Criar Agendamento
 ```bash
-curl -X POST "http://localhost:7000/api/v1/agendamentos" \
+curl -X POST "http://localhost:7000/agendamentos/" \
      -H "Authorization: Bearer <SEU_TOKEN>" \
      -H "Content-Type: application/json" \
-     -d '{"vacina_id": "uuid", "unidade_id": "uuid", "data": "2026-06-01"}'
+     -d '{
+           "vacina_id": "uuid-da-vacina",
+           "unidade_id": "uuid-da-unidade",
+           "data": "2026-06-01T10:00:00"
+         }'
 ```
 
-## 🧪 Cobertura de Testes
+## 📚 Documentação da API
+
+Uma vez iniciado o servidor, você pode acessar a documentação interativa e testar os endpoints diretamente pelo navegador:
+
+- **Swagger UI:** [http://localhost:7000/docs](http://localhost:7000/docs)
+- **Redoc:** [http://localhost:7000/redoc](http://localhost:7000/redoc)
+
+![Swagger UI](docs/assets/tutorial.svg)
+
+## 🧪 Testes
+
 O projeto utiliza **Pytest** com foco em testes de integração e regras de negócio.
 - **Unitários:** Validação de schemas e utilitários.
 - **Integração:** Fluxos completos de agendamento e autenticação.
+
 ```bash
 task test  # Executa a suíte completa
 ```
 
-**VaxFlow** is a robust backend system for immunization management, connecting citizens, health units, and managers in a secure and scalable platform.
-
-## ✨ Features
-- **User Management:** Self-registration, JWT authentication, and Role-Based Access Control (RBAC).
-- **Smart Scheduling:** Vaccination slot reservation with availability validation.
-- **Inventory Control:** Vaccine batch management with expiration control and automatic deduction.
-- **Digital Records:** Accessible digital vaccination card for citizens.
-- **Operational Management:** Registration of health units, seasonal campaigns, and schedules.
-- **Reports & Auditing:** Managerial views of vaccination coverage and action traceability.
-
-## 🏗️ System Architecture
-The system utilizes a multi-layer architecture to ensure separation of concerns:
-
-```mermaid
-graph TD
-    Client[Browser/App] --> API[FastAPI Endpoints]
-    API --> Auth[JWT Auth Middleware]
-    Auth --> Controllers[Business Controllers]
-    Controllers --> Schemas[Pydantic Validation]
-    Controllers --> Models[SQLAlchemy Models]
-    Models --> DB[(PostgreSQL)]
-```
-
-## 📁 Project Structure
-```text
-.
-├── alembic/              # Database migrations
-├── app/                  # Main source code
-│   ├── api/              # Transport layer (Routes and Controllers)
-│   ├── auth/             # Security and Authentication
-│   ├── core/             # Global configurations and System core
-│   ├── db/               # Session and Database Connection
-│   ├── models/           # Database Entities
-│   ├── schema/           # Data validation (Pydantic)
-│   └── templates/        # HTML Interface (Jinja2)
-├── tests/                # Test suite (Pytest)
-├── pyproject.toml        # Dependencies and Tasks
-└── .env                  # Environment configurations
-```
-
-## 🔐 Environment Variables
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| `DATABASE_URL` | DB connection URL | `postgresql://user:pass@localhost:5432/db` |
-| `SECRET_KEY` | Key for JWT signing | `my_super_secure_secret_key` |
-| `DEBUG` | Enables development mode | `True` |
-| `FIRST_SUPERUSER`| Initial admin email | `admin@healthnexus.com` |
-
-## 📡 Request Examples
-### Authentication (Login)
-```bash
-curl -X POST "http://localhost:7000/api/v1/login" \
-     -H "Content-Type: application/json" \
-     -d '{"email": "user@example.com", "password": "password123"}'
-```
-
-### Create Scheduling
-```bash
-curl -X POST "http://localhost:7000/api/v1/agendamentos" \
-     -H "Authorization: Bearer <YOUR_TOKEN>" \
-     -H "Content-Type: application/json" \
-     -d '{"vacina_id": "uuid", "unidade_id": "uuid", "data": "2026-06-01"}'
-```
-
-## 🧪 Test Coverage
-The project uses **Pytest** with a focus on integration tests and business rules.
-- **Unit:** Schema and utility validation.
-- **Integration:** Complete scheduling and authentication flows.
-```bash
-task test  # Runs the full suite
-```
-
 ## 🗺️ Roadmap
-- [ ] Integration with Maps APIs (Geolocation).
-- [ ] National Vaccination Certificate generation in PDF.
-- [ ] WhatsApp/Push notifications.
-- [ ] Mobile App (Flutter).
+
+- [ ] Integração com APIs de Mapas (Geolocalização).
+- [ ] Geração de Certificado Nacional de Vacinação em PDF.
+- [ ] Notificações via WhatsApp/Push.
+- [ ] Aplicativo Mobile (Flutter).
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE) para obter mais informações.
+
+## 👨‍💻 Autores
+
+- **Léo Walker** - [GitHub](https://github.com/leowalker) | [LinkedIn](https://linkedin.com/in/leowalker)
+- **[Nome do Colega]** - [GitHub](...) | [LinkedIn](...)
