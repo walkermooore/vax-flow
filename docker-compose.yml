@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    container_name: imunizeme_backend
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - db
+    networks:
+      - dokploy-network
+    command: >
+      sh -c "uv run alembic upgrade head &&
+             /app/.venv/bin/fastapi run app/main.py --port 8000 --host 0.0.0.0"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.imunizeme.rule=Host(`api.imunizeme.devlearning.space`)"
+      - "traefik.http.routers.imunizeme.entrypoints=websecure"
+      - "traefik.http.routers.imunizeme.tls.certresolver=letsencrypt"
+      - "traefik.http.services.imunizeme.loadbalancer.server.port=8000"
+
+  db:
+    image: postgres:15
+    container_name: imunizeme_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
+
+volumes:
+  pgdata:

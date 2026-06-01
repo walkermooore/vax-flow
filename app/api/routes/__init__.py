@@ -1,0 +1,42 @@
+from fastapi import APIRouter
+
+from .agendas_vacinas_route import router as agendas_vacinas_route_router
+from .developer_route import router as developer_route_router
+from .unidades_route import router as unidades_route_router
+from .vacinas_aplicadas_route import router as vacinas_aplicadas_route_router
+from .lotes_route import router as lotes_route_router
+from .campanhas_route import router as campanhas_route_router
+from .campanhas_unidades_route import router as campanhas_unidades_route_router
+from .file_route import router as file_route_router
+from .funcionalidades_route import router as funcionalidades_route_router
+from .enderecos_route import router as enderecos_route_router
+from .agendamentos_route import router as agendamentos_route_router
+from .papeis_funcionalidades_route import router as papeis_funcionalidades_route_router
+from .papeis_route import router as papeis_route_router
+from .usuarios_route import router as usuarios_route_router
+from .login_route import router as login_route_router
+from .agendas_route import router as agendas_route_router
+from .usuarios_funcionalidades_route import router as usuarios_funcionalidades_route_router
+from .vacinas_route import router as vacinas_route_router
+
+
+routers = APIRouter()
+
+routers.include_router(developer_route_router)
+routers.include_router(agendas_vacinas_route_router)
+routers.include_router(unidades_route_router)
+routers.include_router(vacinas_aplicadas_route_router)
+routers.include_router(lotes_route_router)
+routers.include_router(campanhas_route_router)
+routers.include_router(campanhas_unidades_route_router)
+routers.include_router(file_route_router)
+routers.include_router(funcionalidades_route_router)
+routers.include_router(enderecos_route_router)
+routers.include_router(agendamentos_route_router)
+routers.include_router(papeis_funcionalidades_route_router)
+routers.include_router(papeis_route_router)
+routers.include_router(usuarios_route_router)
+routers.include_router(login_route_router)
+routers.include_router(agendas_route_router)
+routers.include_router(usuarios_funcionalidades_route_router)
+routers.include_router(vacinas_route_router)
